@@ -25,6 +25,13 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     """Initialize services on startup."""
+    print("=" * 50, flush=True)
+    print("🚀 Insta Agent API Starting...", flush=True)
+    print(f"📍 Environment: {os.getenv('RAILWAY_ENVIRONMENT', 'local')}", flush=True)
+    print(f"🔧 Redis URL: {'SET' if REDIS_URL else 'NOT SET'}", flush=True)
+    print(f"🔑 Meta App Secret: {'SET' if META_APP_SECRET else 'NOT SET'}", flush=True)
+    print("=" * 50, flush=True)
+    
     try:
         if REDIS_URL:
             await get_redis(REDIS_URL)  # initialize connection pool
@@ -33,6 +40,14 @@ async def startup():
             print("⚠️ REDIS_URL not set, webhook queuing disabled", flush=True)
     except Exception as e:
         print(f"⚠️ Redis connection failed: {e}. App will still start.", flush=True)
+    
+    print("✅ API ready to receive requests!", flush=True)
+
+
+@app.get("/")
+async def root():
+    """Root endpoint."""
+    return {"message": "Insta Agent API", "status": "running", "health": "/health"}
 
 
 @app.get("/health")
