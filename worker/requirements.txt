@@ -1,0 +1,6 @@
+redis==5.0.8
+requests==2.32.3
+python-dotenv==1.0.1
+orjson==3.10.7
+psycopg[binary]==3.2.3
+fastembed==0.3.2

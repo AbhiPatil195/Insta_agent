@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+WORKDIR /app
+
+COPY dash/requirements.txt /app/dash/requirements.txt
+RUN pip install --no-cache-dir -r /app/dash/requirements.txt
+
+COPY shared /app/shared
+COPY dash /app/dash
+
+EXPOSE 8501
+
+CMD ["streamlit", "run", "dash/app.py", "--server.port", "8501", "--server.baseUrlPath", "/dash", "--server.headless", "true"]
+

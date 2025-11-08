@@ -1,0 +1,24 @@
+# Dashboard IP Allowlist - Production Template
+# ==============================================================================
+# Copy this file to allow_dash.conf and update with your production IPs
+# Restart nginx after changes: docker compose restart nginx
+# ==============================================================================
+
+# Allow localhost (for server-side access)
+allow 127.0.0.1/32;
+allow ::1/128;
+
+# Allow your office/home IP (replace with actual IP)
+# Find your IP: curl ifconfig.me
+# allow 203.0.113.0/32;
+
+# Allow your VPN IP range (if applicable)
+# allow 10.0.0.0/8;
+
+# Allow cloud platform IPs (if self-accessing dashboard)
+# Railway: Check your deployment logs for egress IP
+# Render: Check dashboard networking section
+# Fly.io: allow <your-fly-ip>/32;
+
+# Deny all other IPs
+deny all;
