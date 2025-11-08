@@ -24,7 +24,15 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
-    await get_redis(REDIS_URL)  # initialize connection pool
+    """Initialize services on startup."""
+    try:
+        if REDIS_URL:
+            await get_redis(REDIS_URL)  # initialize connection pool
+            print(f"✅ Connected to Redis successfully", flush=True)
+        else:
+            print("⚠️ REDIS_URL not set, webhook queuing disabled", flush=True)
+    except Exception as e:
+        print(f"⚠️ Redis connection failed: {e}. App will still start.", flush=True)
 
 
 @app.get("/health")
@@ -120,8 +128,13 @@ async def receive_webhook(request: Request):
         raise HTTPException(status_code=400, detail="Invalid JSON")
 
     # Push to Redis queue for async processing
-    await enqueue_event(payload)
-    return {"status": "queued"}
+    try:
+        await enqueue_event(payload)
+        return {"status": "queued"}
+    except Exception as e:
+        print(f"⚠️ Failed to queue event: {e}. Redis may not be connected.", flush=True)
+        # Still return success to Meta to avoid retries
+        return {"status": "received", "note": "queuing unavailable"}
 
 
 @app.get("/privacy", response_class=HTMLResponse)
